@@ -1,3 +1,4 @@
+import 'package:appbancodesangue/guia_doacao_sangue.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -60,8 +61,12 @@ class HomeScreen extends StatelessWidget {
           final option = entry.value;
           return GestureDetector(
             onTap: () {
-              // ignore: avoid_print
-              print(option);
+              if(index == 2){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => GuiaDoacaoScreen()),
+                );
+              } else{
+                print(option);
+              }
             },
             child: Container(
               decoration: BoxDecoration(
