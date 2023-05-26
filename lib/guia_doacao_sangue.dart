@@ -1,6 +1,11 @@
+import 'package:appbancodesangue/guias_de_doacao/o_que_fazer_antes.dart';
+import 'package:appbancodesangue/guias_de_doacao/o_que_fazer_depois.dart';
+import 'package:appbancodesangue/guias_de_doacao/o_que_fazer_durante.dart';
 import 'package:flutter/material.dart';
 
 class GuiaDoacaoScreen extends StatelessWidget{
+  const GuiaDoacaoScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,18 +20,24 @@ class GuiaDoacaoScreen extends StatelessWidget{
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         children: [
-          _buildMenuItem(context, 'O que fazer antes?', Colors.blue, Icons.question_mark),
-          _buildMenuItem(context, 'O que fazer durante?', Colors.orange, Icons.question_mark),
-          _buildMenuItem(context, 'O que fazer depois?', Colors.green, Icons.question_mark),
+          _buildMenuItem(context, 'O que fazer antes?', Colors.blue, Icons.question_mark, const AntesScreen()),
+          _buildMenuItem(context, 'O que fazer durante?', Colors.orange, Icons.question_mark, const DuranteScreen()),
+          _buildMenuItem(context, 'O que fazer depois?', Colors.green, Icons.question_mark, DepoisScreen()),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, String title, Color color, IconData icon){
+  void _navigateToScreen(BuildContext context, Widget screen){
+    Navigator.push(context,
+    MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context, String title, Color color, IconData icon, Widget screen){
     return GestureDetector(
       onTap: (){
-
+        _navigateToScreen(context, screen);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -43,7 +54,7 @@ class GuiaDoacaoScreen extends StatelessWidget{
             Text(
                 title,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold
