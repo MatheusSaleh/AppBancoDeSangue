@@ -15,6 +15,31 @@ class DepoisScreen extends StatelessWidget{
     {
       'icon': Icons.local_drink,
       'text': 'Hidratação: Beba bastante líquido nas horas seguintes à doação de sangue. Isso ajuda a repor os fluidos corporais perdidos durante o processo.'
+    },
+    {
+      'icon': Icons.schedule,
+      'text': 'Evite atividades extenuantes: Evite exercícios vigorosos ou atividades '
+          'que exijam muito esforço físico nas primeiras 24 horas após a doação. Seu corpo'
+          'precisa de tempo para se recuperar completamente.'
+    },
+    {
+      'icon': Icons.no_drinks,
+      'text': 'Evite álcool e fumar: Evite o consumo de álcool e o tabagismo por pelo menos'
+          '24 horas após a doação de sangue. Essas substâncias podem afetar negativamente sua '
+          'recuperação e desidratá-lo ainda mais.'
+    },
+    {
+      'icon': Icons.sd_card_alert,
+      'text': 'Cuidados com o local da punção: Mantenha o curativo no local da '
+          'punção por pelo menos algumas horas. Evite levantar objetos pesados ou fazer '
+          'movimentos bruscos com o braço doado, a fim de evitar qualquer sangramento ou desconforto adicional.'
+    },
+    {
+      'icon': Icons.checklist_rtl_outlined,
+      'text': 'Siga as instruções do profissional de saúde: '
+          'É fundamental seguir as orientações específicas fornecidas pela '
+          'equipe médica ou pelo centro de doação de sangue. Eles podem fornecer '
+          'informações adicionais e responder a quiasquer perguntas que voce possa ter.'
     }
   ];
 

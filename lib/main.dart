@@ -1,5 +1,6 @@
 import 'package:appbancodesangue/guia_doacao_sangue.dart';
 import 'package:flutter/material.dart';
+import 'package:appbancodesangue/registro_doacao.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,8 +65,10 @@ class HomeScreen extends StatelessWidget {
               if(index == 2){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => GuiaDoacaoScreen()),
                 );
-              } else{
-                print(option);
+              }
+              if(index == 1){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => FormularioDoacao()),
+                );
               }
             },
             child: Container(

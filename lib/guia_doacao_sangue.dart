@@ -20,8 +20,8 @@ class GuiaDoacaoScreen extends StatelessWidget{
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         children: [
-          _buildMenuItem(context, 'O que fazer antes?', Colors.blue, Icons.question_mark, const AntesScreen()),
-          _buildMenuItem(context, 'O que fazer durante?', Colors.orange, Icons.question_mark, const DuranteScreen()),
+          _buildMenuItem(context, 'O que fazer antes?', Colors.blue, Icons.question_mark,  AntesScreen()),
+          _buildMenuItem(context, 'O que fazer durante?', Colors.orange, Icons.question_mark,  DuranteScreen()),
           _buildMenuItem(context, 'O que fazer depois?', Colors.green, Icons.question_mark, DepoisScreen()),
         ],
       ),
