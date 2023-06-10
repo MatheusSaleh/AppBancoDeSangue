@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "926965461052",
+    "project_id": "app-banco-de-sangue",
+    "storage_bucket": "app-banco-de-sangue.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926965461052:android:3f9a50d19e988da27c5339",
+        "android_client_info": {
+          "package_name": "com.example.appbancodesangue"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "926965461052-3nv07qthubi1l93nlp3uc5uh4jgf052h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7ONPihgAIUktcdIG1yXNJ6QAKyJXowtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926965461052-3nv07qthubi1l93nlp3uc5uh4jgf052h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
