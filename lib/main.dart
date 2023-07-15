@@ -131,8 +131,7 @@ class HomeScreen extends StatelessWidget {
     'Registrar Doação de Sangue',
     'Guia de Doação',
     'Histórico',
-    'Sobre',
-    'Parte Administrativa',
+    'Sobre'
   ];
 
   final List<IconData> icons = [
@@ -140,8 +139,7 @@ class HomeScreen extends StatelessWidget {
     Icons.favorite,
     Icons.fact_check_outlined,
     Icons.history,
-    Icons.info,
-    Icons.admin_panel_settings
+    Icons.info
   ];
 
   HomeScreen({Key? key}) : super(key: key);
