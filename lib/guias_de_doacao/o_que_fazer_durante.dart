@@ -24,7 +24,7 @@ class DuranteScreen extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title:  Text('O que fazer durante?'),
+        title:  const Text('O que fazer durante?'),
         backgroundColor: Colors.orange,
       ),
       body: Center(

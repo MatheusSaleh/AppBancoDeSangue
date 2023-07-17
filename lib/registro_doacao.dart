@@ -1,24 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FormularioDoacao extends StatefulWidget{
+class FormularioDoacao extends StatefulWidget {
   const FormularioDoacao({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FormularioDoacaoState createState() => _FormularioDoacaoState();
 }
 
-class _FormularioDoacaoState extends State<FormularioDoacao>{
-
-  
-
+class _FormularioDoacaoState extends State<FormularioDoacao> {
   DateTime _selectedDate = DateTime.now();
-  
+
   final TextEditingController _nomeController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(context: context, initialDate: _selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
-    if(picked != null && picked != _selectedDate) {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: _selectedDate,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
@@ -26,7 +29,7 @@ class _FormularioDoacaoState extends State<FormularioDoacao>{
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Formulário de Doação de Sangue'),
@@ -36,11 +39,13 @@ class _FormularioDoacaoState extends State<FormularioDoacao>{
         child: Form(
           child: Column(
             children: [
-              Text("Digite o seu nome completo abaixo, e caso sua doação esteja sendo realizada "
+              const Text(
+                  "Digite o seu nome completo abaixo, e caso sua doação esteja sendo realizada "
                   "em uma data diferente da atual, modifique clicando no botão 'Selecionar Data'. Para confirmar o registro de "
                   "sua doação clique no botão 'Registrar Doação'."),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Digite o seu Nome'),
+                decoration:
+                    const InputDecoration(labelText: 'Digite o seu Nome'),
                 controller: _nomeController,
               ),
               GestureDetector(
@@ -63,27 +68,33 @@ class _FormularioDoacaoState extends State<FormularioDoacao>{
                 onPressed: () => _selectDate(context),
                 child: const Text('Selecionar Data'),
               ),
-              const SizedBox(height: 16.0,),
+              const SizedBox(
+                height: 16.0,
+              ),
               ElevatedButton(
-                  onPressed: (){
-
+                  onPressed: () async {
                     String nomeUsuario = _nomeController.text;
 
                     String data = _selectedDate.toString();
-                    
-                    final firestore = FirebaseFirestore.instance;
-                    
-                    final doacoesRef = firestore.collection('doacoes');
 
-                    final novaDoacao = {
-                      'nome': nomeUsuario,
-                      'data_doacao': data
-                    };
+                    final FirebaseAuth auth = FirebaseAuth.instance;
+                    final User? user = auth.currentUser;
 
-                    doacoesRef.add(novaDoacao);
+                    if (user != null) {
+                      String uid = user.uid;
+
+                      final firestore = FirebaseFirestore.instance;
+                      final doacoesRef = firestore.collection('doacoes');
+
+                      final novaDoacao = {
+                        'nome': nomeUsuario,
+                        'data_doacao': data,
+                        'uid_usuario': uid,
+                      };
+                      await doacoesRef.add(novaDoacao);
+                    }
                   },
-                  child: const Text('Registrar Doação')
-              )
+                  child: const Text('Registrar Doação'))
             ],
           ),
         ),

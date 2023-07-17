@@ -1,3 +1,4 @@
+import 'package:appbancodesangue/historico_doacao.dart';
 import 'package:flutter/material.dart';
 import 'package:appbancodesangue/guia_doacao_sangue.dart';
 import 'package:appbancodesangue/registro_doacao.dart';
@@ -22,7 +23,7 @@ class AuthService {
       return await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
     } catch (e) {
-      print(e.toString());
+      //print(e.toString());
       return null;
     }
   }
@@ -53,6 +54,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -98,11 +100,13 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _loginWithEmailAndPassword(BuildContext context, String email, String password) async {
     final userCredential = await _authService.signInWithEmailAndPassword(email, password);
     if (userCredential != null) {
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } else {
+      // ignore: use_build_context_synchronously
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -148,7 +152,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     if(!_authService.isUserLoggedIn()){
-      return LoginPage();
+      return const LoginPage();
     }
 
     return Scaffold(
@@ -167,16 +171,22 @@ class HomeScreen extends StatelessWidget {
           final option = entry.value;
           return GestureDetector(
             onTap: () {
+              if (index == 3){
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: ((context) => HistoricoDoacoes())
+                  ));
+              }
               if (index == 2) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GuiaDoacaoScreen()),
+                  MaterialPageRoute(builder: (context) => const GuiaDoacaoScreen()),
                 );
               }
               if (index == 1) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FormularioDoacao()),
+                  MaterialPageRoute(builder: (context) => const FormularioDoacao()),
                 );
               }
             },
