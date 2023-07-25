@@ -1,4 +1,5 @@
 import 'package:appbancodesangue/historico_doacao.dart';
+import 'package:appbancodesangue/sobre.dart';
 import 'package:flutter/material.dart';
 import 'package:appbancodesangue/guia_doacao_sangue.dart';
 import 'package:appbancodesangue/registro_doacao.dart';
@@ -171,6 +172,11 @@ class HomeScreen extends StatelessWidget {
           final option = entry.value;
           return GestureDetector(
             onTap: () {
+              if(index == 4){
+                Navigator.push(context, 
+                MaterialPageRoute(builder: ((context) => SobreScreen()))
+                );
+              }
               if (index == 3){
                 Navigator.push(
                   context, 
