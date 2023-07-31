@@ -1,4 +1,5 @@
 import 'package:appbancodesangue/historico_doacao.dart';
+import 'package:appbancodesangue/noticias.dart';
 import 'package:appbancodesangue/sobre.dart';
 import 'package:flutter/material.dart';
 import 'package:appbancodesangue/guia_doacao_sangue.dart';
@@ -29,7 +30,7 @@ class AuthService {
     }
   }
 
-  bool isUserLoggedIn(){
+  bool isUserLoggedIn() {
     return _firebaseAuth.currentUser != null;
   }
 }
@@ -98,8 +99,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _loginWithEmailAndPassword(BuildContext context, String email, String password) async {
-    final userCredential = await _authService.signInWithEmailAndPassword(email, password);
+  Future<void> _loginWithEmailAndPassword(
+      BuildContext context, String email, String password) async {
+    final userCredential =
+        await _authService.signInWithEmailAndPassword(email, password);
     if (userCredential != null) {
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
@@ -113,7 +116,8 @@ class _LoginPageState extends State<LoginPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Erro'),
-              content: const Text('Falha ao fazer login. Verifique suas credenciais'),
+              content: const Text(
+                  'Falha ao fazer login. Verifique suas credenciais'),
               actions: [
                 TextButton(
                     onPressed: () {
@@ -128,7 +132,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class HomeScreen extends StatelessWidget {
-
   final AuthService _authService = AuthService();
 
   final List<String> _options = [
@@ -151,8 +154,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    if(!_authService.isUserLoggedIn()){
+    if (!_authService.isUserLoggedIn()) {
       return const LoginPage();
     }
 
@@ -172,27 +174,37 @@ class HomeScreen extends StatelessWidget {
           final option = entry.value;
           return GestureDetector(
             onTap: () {
-              if(index == 4){
-                Navigator.push(context, 
-                MaterialPageRoute(builder: ((context) => SobreScreen()))
-                );
-              }
-              if (index == 3){
+              if (index == 4) {
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: ((context) => HistoricoDoacoes())
-                  ));
+                    context,
+                    MaterialPageRoute(
+                        builder: ((context) => const SobreScreen())));
+              }
+              if (index == 3) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: ((context) => HistoricoDoacoes())));
               }
               if (index == 2) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GuiaDoacaoScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const GuiaDoacaoScreen()),
                 );
               }
               if (index == 1) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FormularioDoacao()),
+                  MaterialPageRoute(
+                      builder: (context) => const FormularioDoacao()),
+                );
+              }
+              if (index == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NoticiasScreen())
                 );
               }
             },
