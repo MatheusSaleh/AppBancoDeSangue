@@ -1,4 +1,5 @@
 import 'package:appbancodesangue/questionario/quiz.dart';
+import 'package:appbancodesangue/questionario/resultado.dart';
 import 'package:flutter/material.dart';
 
 class QuestionarioScreen extends StatefulWidget {
@@ -91,8 +92,9 @@ class _QuestionarioScreenState extends State<QuestionarioScreen> {
             ? Quiz(
                 responderQuestao: _responderQuestao,
                 questaoIndex: _questaoIndex,
-                questoes: _questoes)
-            : Resultado(_totalScore, _resetQuiz),
+                questoes: _questoes,
+                )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }

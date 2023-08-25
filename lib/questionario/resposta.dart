@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Resposta extends StatelessWidget {
-  final Function selectHandler;
+  final void Function() selectHandler;
   final String textoDaResposta;
 
   const Resposta(this.selectHandler, this.textoDaResposta, {Key? key})
@@ -12,14 +12,13 @@ class Resposta extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: selectHandler(),
+        onPressed: selectHandler,
         style: ButtonStyle(
-          textStyle: 
-          MaterialStateProperty.all(const TextStyle(color: Colors.white)),
+          textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
           backgroundColor: MaterialStateProperty.all(Colors.green)
         ),
         child: Text(textoDaResposta),
-        ),
+      ),
     );
   }
 }

@@ -211,16 +211,9 @@ class HomeScreen extends StatelessWidget {
               }
               if (index == 0) {
                 Navigator.push(
-<<<<<<< Updated upstream
                     context,
                     MaterialPageRoute(
                         builder: (context) => const NoticiasScreen()));
-=======
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NoticiasScreen()));
-     
->>>>>>> Stashed changes
               }
             },
             child: Container(
