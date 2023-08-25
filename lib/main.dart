@@ -1,5 +1,6 @@
 import 'package:appbancodesangue/historico_doacao.dart';
 import 'package:appbancodesangue/noticias.dart';
+import 'package:appbancodesangue/questionario/questionario.dart';
 import 'package:appbancodesangue/sobre.dart';
 import 'package:flutter/material.dart';
 import 'package:appbancodesangue/guia_doacao_sangue.dart';
@@ -139,7 +140,8 @@ class HomeScreen extends StatelessWidget {
     'Registrar Doação de Sangue',
     'Guia de Doação',
     'Histórico',
-    'Sobre'
+    'Sobre',
+    'Questionário'
   ];
 
   final List<IconData> icons = [
@@ -147,7 +149,8 @@ class HomeScreen extends StatelessWidget {
     Icons.favorite,
     Icons.fact_check_outlined,
     Icons.history,
-    Icons.info
+    Icons.info,
+    Icons.question_mark_rounded
   ];
 
   HomeScreen({Key? key}) : super(key: key);
@@ -174,6 +177,12 @@ class HomeScreen extends StatelessWidget {
           final option = entry.value;
           return GestureDetector(
             onTap: () {
+              if (index == 5) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const QuestionarioScreen()));
+              }
               if (index == 4) {
                 Navigator.push(
                     context,
@@ -202,10 +211,9 @@ class HomeScreen extends StatelessWidget {
               }
               if (index == 0) {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NoticiasScreen())
-                );
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NoticiasScreen()));
               }
             },
             child: Container(
