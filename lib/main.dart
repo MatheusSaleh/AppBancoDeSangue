@@ -8,6 +8,7 @@ import 'package:appbancodesangue/registro_doacao.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,9 @@ void main() async {
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+Future<void> signOut() async {
+  await _firebaseAuth.signOut();
+}
   Future<UserCredential?> signInWithEmailAndPassword(
       String email, String password) async {
     try {
@@ -45,10 +49,23 @@ class MyApp extends StatelessWidget {
       title: 'Banco de Sangue',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 221, 46, 33)),
+          seedColor: const Color.fromARGB(255, 221, 46, 33),
+        ),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            final user = snapshot.data;
+            if (user == null) {
+              return LoginPage();
+            }
+            return HomeScreen();
+          }
+          return CircularProgressIndicator(); // Indicador de carregamento
+        },
+      ),
     );
   }
 }
@@ -62,43 +79,155 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late Color myColor;
+  late Size mediaSize;
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool rememberUser = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
+    myColor = Theme.of(context).primaryColor;
+    mediaSize = MediaQuery.of(context).size;
+     return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: const AssetImage("lib/assets/img/doacao.jpeg"),
+          fit: BoxFit.cover,
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Senha'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-                onPressed: () {
-                  final email = _emailController.text;
-                  final password = _passwordController.text;
-                  _loginWithEmailAndPassword(context, email, password);
-                },
-                child: const Text('Login'))
-          ],
+       child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(children: [
+          Positioned(top: 80, child: _buildTop()),
+          Positioned(bottom: 0, child: _buildBottom()),
+        ]),
+      ),
+    );
+  }
+    Widget _buildTop() {
+    return SizedBox(
+      width: mediaSize.width,
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.vaccines,
+            size: 100,
+            color: Colors.white,
+          ),
+          Text(
+            "Banco de Sangue",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 40,
+                letterSpacing: 2),
+          )
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildBottom() {
+    return SizedBox(
+      width: mediaSize.width,
+      child: Card(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        )),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: _buildForm(),
         ),
       ),
     );
   }
+
+ Widget _buildForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Bem Vindo",
+          style: TextStyle(
+              color: Colors.black, fontSize: 32, fontWeight: FontWeight.w500),
+        ),
+        _buildGreyText("Por favor informe abaixo suas informações de login"),
+        const SizedBox(height: 60),
+        _buildGreyText("Email"),
+        _buildInputField(_emailController),
+        const SizedBox(height: 40),
+        _buildGreyText("Senha"),
+        _buildInputField(_passwordController, isPassword: true),
+        const SizedBox(height: 20),
+        _buildRememberForgot(),
+        const SizedBox(height: 20),
+        _buildLoginButton(),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+ Widget _buildGreyText(String text) {
+    return Text(
+      text,
+      style: const TextStyle(color: Colors.grey),
+    );
+  }
+
+ Widget _buildInputField(TextEditingController controller,
+      {isPassword = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
+      ),
+      obscureText: isPassword,
+    );
+  }
+
+ Widget _buildRememberForgot() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Checkbox(
+                value: rememberUser,
+                onChanged: (value) {
+                  setState(() {
+                    rememberUser = value!;
+                  });
+                }),
+            _buildGreyText("Relembre-me"),
+          ],
+        ),
+      ],
+    );
+  }
+
+Widget _buildLoginButton() {
+    return ElevatedButton(
+      onPressed: () {
+      final email = _emailController.text;
+        final password = _passwordController.text;
+      _loginWithEmailAndPassword(context, email, password);
+      },
+      style: ElevatedButton.styleFrom(
+        shape: const StadiumBorder(),
+        elevation: 20,
+        shadowColor: myColor,
+        minimumSize: const Size.fromHeight(60),
+      ),
+      child: const Text("LOGIN"),
+    );
+  }
+
+
 
   Future<void> _loginWithEmailAndPassword(
       BuildContext context, String email, String password) async {
@@ -165,6 +294,18 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Doação de Sangue'),
+         actions: [
+    IconButton(
+      icon: Icon(Icons.exit_to_app),
+      onPressed: () async {
+        await _authService.signOut(); 
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      },
+    ),
+  ],
       ),
       body: GridView.count(
         crossAxisCount: 2,
