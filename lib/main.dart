@@ -20,9 +20,10 @@ void main() async {
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-Future<void> signOut() async {
-  await _firebaseAuth.signOut();
-}
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
   Future<UserCredential?> signInWithEmailAndPassword(
       String email, String password) async {
     try {
@@ -84,29 +85,58 @@ class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isEmailValid = false;
+  bool _isPasswordValid = false;
   bool rememberUser = false;
-
+  String _emailErrorMessage = "";
+  String _passwordErrorMessage = "";
+bool _isValidEmail(String email) {
+  final emailRegExp =
+      RegExp(r"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$");
+  _isEmailValid = emailRegExp.hasMatch(email);
+  _emailErrorMessage = _isEmailValid ? "" : "Email inválido.";
+  return _isEmailValid;
+}
+bool _isValidPassword(String password) {
+  if (password.isEmpty) {
+    _passwordErrorMessage = "A senha é obrigatória.";
+    _isPasswordValid = false;
+  } else if (password.length < 8) {
+    _passwordErrorMessage = "A senha deve ter pelo menos 8 caracteres.";
+    _isPasswordValid = false;
+  } else {
+    _passwordErrorMessage = "";
+    _isPasswordValid = true;
+  }
+  return _isPasswordValid;
+}
   @override
   Widget build(BuildContext context) {
     myColor = Theme.of(context).primaryColor;
     mediaSize = MediaQuery.of(context).size;
+<<<<<<< Updated upstream
      return Container(
       decoration: const BoxDecoration(
+=======
+    return Container(
+      decoration: BoxDecoration(
+>>>>>>> Stashed changes
         image: DecorationImage(
           image: AssetImage("lib/assets/img/doacao.jpeg"),
           fit: BoxFit.cover,
         ),
       ),
-       child: Scaffold(
+      child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(children: [
-          Positioned(top: 80, child: _buildTop()),
+          Positioned(top: 10, child: _buildTop()),
           Positioned(bottom: 0, child: _buildBottom()),
         ]),
       ),
     );
   }
-    Widget _buildTop() {
+
+  Widget _buildTop() {
     return SizedBox(
       width: mediaSize.width,
       child: const Column(
@@ -129,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  
+
   Widget _buildBottom() {
     return SizedBox(
       width: mediaSize.width,
@@ -147,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
- Widget _buildForm() {
+  Widget _buildForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -159,10 +189,18 @@ class _LoginPageState extends State<LoginPage> {
         _buildGreyText("Por favor informe abaixo suas informações de login"),
         const SizedBox(height: 60),
         _buildGreyText("Email"),
-        _buildInputField(_emailController),
+        _buildInputField(_emailController, isEmail: true),
+        Text(
+          _emailErrorMessage,
+          style: TextStyle(color: Colors.red),
+        ),
         const SizedBox(height: 40),
         _buildGreyText("Senha"),
         _buildInputField(_passwordController, isPassword: true),
+        Text(
+          _passwordErrorMessage,
+          style: TextStyle(color: Colors.red),
+        ),
         const SizedBox(height: 20),
         _buildRememberForgot(),
         const SizedBox(height: 20),
@@ -172,25 +210,52 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
- Widget _buildGreyText(String text) {
+  Widget _buildGreyText(String text) {
     return Text(
       text,
       style: const TextStyle(color: Colors.grey),
     );
   }
 
- Widget _buildInputField(TextEditingController controller,
-      {isPassword = false}) {
+  Widget _buildInputField(TextEditingController controller,
+      {isPassword = false, isEmail = false}) {
     return TextField(
       controller: controller,
+      onChanged: (value) {
+         if (isPassword) {
+        setState(() {
+          _passwordErrorMessage = _isValidPassword(value) ? "" : _passwordErrorMessage;
+        });
+        } else {
+        setState(() {
+          _emailErrorMessage = _isValidEmail(value) ? "" : "Email inválido.";
+        });
+        }
+      },
       decoration: InputDecoration(
+<<<<<<< Updated upstream
         suffixIcon: isPassword ? const Icon(Icons.remove_red_eye) : const Icon(Icons.done),
+=======
+       suffixIcon: isPassword
+    ? Icon(
+        _isPasswordValid ? Icons.done : Icons.error,
+        color: _isPasswordValid ? Colors.green : Colors.red,
+      )
+    : Icon(
+        isEmail
+            ? (_isEmailValid ? Icons.done : Icons.error)
+            : Icons.done,
+        color: isEmail
+            ? (_isEmailValid ? Colors.green : Colors.red)
+            : Colors.black, // Use a cor apropriada para senhas
+      ),
+>>>>>>> Stashed changes
       ),
       obscureText: isPassword,
     );
   }
 
- Widget _buildRememberForgot() {
+  Widget _buildRememberForgot() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -210,12 +275,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-Widget _buildLoginButton() {
+  Widget _buildLoginButton() {
     return ElevatedButton(
       onPressed: () {
-      final email = _emailController.text;
+        final email = _emailController.text;
         final password = _passwordController.text;
-      _loginWithEmailAndPassword(context, email, password);
+        _loginWithEmailAndPassword(context, email, password);
       },
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
@@ -226,8 +291,6 @@ Widget _buildLoginButton() {
       child: const Text("LOGIN"),
     );
   }
-
-
 
   Future<void> _loginWithEmailAndPassword(
       BuildContext context, String email, String password) async {
@@ -294,6 +357,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Doação de Sangue'),
+<<<<<<< Updated upstream
          actions: [
     IconButton(
       icon: const Icon(Icons.exit_to_app),
@@ -306,6 +370,20 @@ class HomeScreen extends StatelessWidget {
       },
     ),
   ],
+=======
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await _authService.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+          ),
+        ],
+>>>>>>> Stashed changes
       ),
       body: GridView.count(
         crossAxisCount: 2,
