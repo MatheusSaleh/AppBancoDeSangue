@@ -6,18 +6,22 @@ class Resposta extends StatelessWidget {
 
   const Resposta(this.selectHandler, this.textoDaResposta, {Key? key})
       : super(key: key);
-  
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: selectHandler,
         style: ButtonStyle(
           textStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
-          backgroundColor: MaterialStateProperty.all(Colors.green)
+          backgroundColor:
+              MaterialStateProperty.all(const Color.fromARGB(255, 204, 68, 33)),
         ),
-        child: Text(textoDaResposta),
+        child: Text(
+          textoDaResposta,
+          style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+        ),
       ),
     );
   }

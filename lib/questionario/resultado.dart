@@ -10,15 +10,15 @@ class Result extends StatelessWidget {
   String get resultPhrase {
     String resultText;
     if (resultadoScore >= 41) {
-      resultText = 'Você é incrível!';
+      resultText = 'Você é um verdadeiro heroi da doação de sangue!';
     } else if (resultadoScore >= 31) {
-      resultText = 'Muito Bom';
+      resultText = 'Parabéns, você é um doador exemplar';
     } else if (resultadoScore >= 21) {
-      resultText = 'Você precisa estudar mais';
+      resultText = 'Seu esforço é apreciado, mas ainda há mais a aprender sobre a doação de sangue.';
     } else if (resultadoScore >= 1) {
-      resultText = 'Você precisa estudar muito mais';
+      resultText = 'É louvável que você tenha interesse, mas é importante estudar mais sobre a doação de sangue.';
     } else {
-      resultText = 'Você foi muito mal';
+      resultText = 'Parece que você precisa aprender mais sobre a importância da doação de sangue.';
     }
     return resultText;
   }
@@ -35,20 +35,20 @@ class Result extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Text(
-            'Score' '$resultadoScore',
+            'Score ' '$resultadoScore',
             style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           TextButton(
-            onPressed: resetHandler, 
-            child: Container(
-              color: Colors.green,
-              padding: const EdgeInsets.all(14),
-              child: const Text(
-                'Reiniciar Quiz',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ))
+              onPressed: resetHandler,
+              child: Container(
+                color: Color.fromARGB(255, 255, 0, 0),
+                padding: const EdgeInsets.all(14),
+                child: const Text(
+                  'Reiniciar Quiz',
+                  style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                ),
+              ))
         ],
       ),
     );

@@ -28,6 +28,10 @@ class AntesScreen extends StatelessWidget{
       'icon': Icons.person_off,
       'text': 'Evite atividade física intensa: Evite exercícios vigorosos ou atividades extenuantes antes da doação de sangue. Isto pode ajudar a evitar tonturas ou fraqueza durante o processo.'
     },
+    {
+      'icon': Icons.timer,
+      'text': 'Pessoas saudáveis em geral podem doar sangue, tendo idade entre 16 e 69 anos, (menores de 18 anos devem apresentar consentimento formal do responsável legal)'
+    }
   ];
 
   @override

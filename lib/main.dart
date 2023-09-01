@@ -8,7 +8,6 @@ import 'package:appbancodesangue/registro_doacao.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,13 +58,14 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             final user = snapshot.data;
             if (user == null) {
-              return LoginPage();
+              return const LoginPage();
             }
             return HomeScreen();
           }
-          return CircularProgressIndicator(); // Indicador de carregamento
+          return const CircularProgressIndicator(); // Indicador de carregamento
         },
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -91,9 +91,9 @@ class _LoginPageState extends State<LoginPage> {
     myColor = Theme.of(context).primaryColor;
     mediaSize = MediaQuery.of(context).size;
      return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
-          image: const AssetImage("lib/assets/img/doacao.jpeg"),
+          image: AssetImage("lib/assets/img/doacao.jpeg"),
           fit: BoxFit.cover,
         ),
       ),
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           "Bem Vindo",
           style: TextStyle(
               color: Colors.black, fontSize: 32, fontWeight: FontWeight.w500),
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
-        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : Icon(Icons.done),
+        suffixIcon: isPassword ? const Icon(Icons.remove_red_eye) : const Icon(Icons.done),
       ),
       obscureText: isPassword,
     );
@@ -296,12 +296,12 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Doação de Sangue'),
          actions: [
     IconButton(
-      icon: Icon(Icons.exit_to_app),
+      icon: const Icon(Icons.exit_to_app),
       onPressed: () async {
         await _authService.signOut(); 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
     ),

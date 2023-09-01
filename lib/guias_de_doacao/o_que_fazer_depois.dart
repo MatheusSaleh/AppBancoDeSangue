@@ -40,6 +40,10 @@ class DepoisScreen extends StatelessWidget{
           'É fundamental seguir as orientações específicas fornecidas pela '
           'equipe médica ou pelo centro de doação de sangue. Eles podem fornecer '
           'informações adicionais e responder a quiasquer perguntas que voce possa ter.'
+    },
+    {
+      'icon': Icons.calendar_month,
+      'text': 'Caso pretenda doar sangue novamente certifique-se de respeitar os intervalos entre doações sendo eles 60 dias para homens e 90 dias para mulheres'
     }
   ];
 

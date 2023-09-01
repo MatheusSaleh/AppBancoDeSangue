@@ -11,55 +11,89 @@ class QuestionarioScreen extends StatefulWidget {
 
 class _QuestionarioScreenState extends State<QuestionarioScreen> {
   final _questoes = const [
-    {
-      'textoDaQuestao': 'Q1. Quem Criou o Flutter? ',
-      'respostas': [
-        {'text': 'Facebook', 'score': -2},
-        {'text': 'Adobe', 'score': -3},
-        {'text': 'Google', 'score': 10},
-        {'text': 'Microsoft', 'score': -2},
-      ],
-    },
-    {
-      'textoDaQuestao': 'Q2. O que é o Flutter?',
-      'respostas': [
-        {'text': 'Um Kit de desenvolvimento para Android', 'score': -2},
-        {'text': 'Um Kit de desenvolvimento para iOS', 'score': -2},
-        {'text': 'Um Kit de desenvolvimento Web', 'score': -2},
-        {
-          'text': 'Um Kit de desenvolvimento iOS, Android, Web e Desktop',
-          'score': 10
-        }
-      ],
-    },
-    {
-      'textoDaQuestao':
-          'Q3. Qual é a linguagem de programação usada pelo Flutter?',
-      'respostas': [
-        {'text': 'Ruby', 'score': -2},
-        {'text': 'Dart', 'score': 10},
-        {'text': 'C++', 'score': -2},
-        {'text': 'Kotlin', 'score': -2},
-      ],
-    },
-    {
-      'textoDaQuestao': 'Q4. Quem criou a linguagem de programação Dart?',
-      'respostas': [
-        {'text': 'Lars Bak e Kasper Lund', 'score': 10},
-        {'text': 'Brendam Eich', 'score': -2},
-        {'text': 'Bjarne Stroustrup', 'score': -2},
-        {'text': 'Jeremy Ashkenas', 'score': -2},
-      ],
-    },
-    {
-      'textoDaQuestao':
-          'Q5. O Flutter está disponível para Web e Desktop em versão estável ?',
-      'respostas': [
-        {'text': 'Sim', 'score': -2},
-        {'text': 'No', 'score': 10},
-      ],
-    },
-  ];
+  {
+    'textoDaQuestao': 'Q1. Quem pode doar sangue?',
+    'respostas': [
+      {'text': 'Pessoas com mais de 18 anos', 'score': -2},
+      {'text': 'Apenas homens podem doar', 'score': -2},
+      {'text': 'Pessoas saudáveis em geral', 'score': 10},
+      {'text': 'Pessoas vegetarianas', 'score': -2},
+    ],
+  },
+  {
+    'textoDaQuestao': 'Q2. Qual é o intervalo mínimo entre as doações de sangue?',
+    'respostas': [
+      {'text': '2 semanas', 'score': -2},
+      {'text': '2 meses', 'score': -2},
+      {'text': '60 dias para Homens e 90 dias para Mulheres', 'score': 10},
+      {'text': '6 meses', 'score': -2},
+    ],
+  },
+  {
+    'textoDaQuestao': 'Q3. Quais são os benefícios de doar sangue?',
+    'respostas': [
+      {
+        'text': 'Estimula o apetite',
+        'score': -2,
+      },
+      {
+        'text': 'Reduz o risco de anemia',
+        'score': 10,
+      },
+      {
+        'text': 'Aumenta a sensibilidade à insulina',
+        'score': -2,
+      },
+      {
+        'text': 'Causa alergias',
+        'score': -2,
+      },
+    ],
+  },
+  {
+    'textoDaQuestao': 'Q4. Como é feito o processo de doação de sangue?',
+    'respostas': [
+      {
+        'text': 'É realizada uma cirurgia',
+        'score': -2,
+      },
+      {
+        'text': 'É coletado sangue através de uma agulha',
+        'score': 10,
+      },
+      {
+        'text': 'É aplicada uma injeção',
+        'score': -2,
+      },
+      {
+        'text': 'É feita uma coleta de urina',
+        'score': -2,
+      },
+    ],
+  },
+  {
+    'textoDaQuestao': 'Q5. O que acontece após a doação de sangue?',
+    'respostas': [
+      {
+        'text': 'O sangue é descartado',
+        'score': -2,
+      },
+      {
+        'text': 'O sangue é usado imediatamente em transfusões',
+        'score': -2,
+      },
+      {
+        'text': 'O sangue passa por testes e é armazenado para uso futuro',
+        'score': 10,
+      },
+      {
+        'text': 'O sangue é convertido em plasma',
+        'score': -2,
+      },
+    ],
+  },
+];
+
 
   var _questaoIndex = 0;
   var _totalScore = 0;
