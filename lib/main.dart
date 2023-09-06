@@ -114,13 +114,8 @@ bool _isValidPassword(String password) {
   Widget build(BuildContext context) {
     myColor = Theme.of(context).primaryColor;
     mediaSize = MediaQuery.of(context).size;
-<<<<<<< Updated upstream
      return Container(
       decoration: const BoxDecoration(
-=======
-    return Container(
-      decoration: BoxDecoration(
->>>>>>> Stashed changes
         image: DecorationImage(
           image: AssetImage("lib/assets/img/doacao.jpeg"),
           fit: BoxFit.cover,
@@ -233,23 +228,7 @@ bool _isValidPassword(String password) {
         }
       },
       decoration: InputDecoration(
-<<<<<<< Updated upstream
         suffixIcon: isPassword ? const Icon(Icons.remove_red_eye) : const Icon(Icons.done),
-=======
-       suffixIcon: isPassword
-    ? Icon(
-        _isPasswordValid ? Icons.done : Icons.error,
-        color: _isPasswordValid ? Colors.green : Colors.red,
-      )
-    : Icon(
-        isEmail
-            ? (_isEmailValid ? Icons.done : Icons.error)
-            : Icons.done,
-        color: isEmail
-            ? (_isEmailValid ? Colors.green : Colors.red)
-            : Colors.black, // Use a cor apropriada para senhas
-      ),
->>>>>>> Stashed changes
       ),
       obscureText: isPassword,
     );
@@ -357,7 +336,6 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Doação de Sangue'),
-<<<<<<< Updated upstream
          actions: [
     IconButton(
       icon: const Icon(Icons.exit_to_app),
@@ -370,20 +348,6 @@ class HomeScreen extends StatelessWidget {
       },
     ),
   ],
-=======
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await _authService.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-        ],
->>>>>>> Stashed changes
       ),
       body: GridView.count(
         crossAxisCount: 2,
