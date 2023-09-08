@@ -42,7 +42,7 @@ class Result extends StatelessWidget {
           TextButton(
               onPressed: resetHandler,
               child: Container(
-                color: Color.fromARGB(255, 255, 0, 0),
+                color: const Color.fromARGB(255, 255, 0, 0),
                 padding: const EdgeInsets.all(14),
                 child: const Text(
                   'Reiniciar Quiz',

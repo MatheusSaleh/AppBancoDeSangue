@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
+import 'package:intl/intl.dart';
 
 class HistoricoDoacoes extends StatefulWidget {
   @override
@@ -55,10 +54,19 @@ class _HistoricoDoacoesState extends State<HistoricoDoacoes> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              var doacao = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              var doacao =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+              String dataDoacaoStr = doacao['data_doacao'];
+
+              DateTime dataDoacao = DateTime.parse(dataDoacaoStr);
+
+              String dataFormatada =
+                  DateFormat('dd/MM/yyyy HH:mm').format(dataDoacao);
+
               return ListTile(
                 title: const Text('Doação'),
-                subtitle: Text(doacao['data_doacao'] ?? ''),
+                subtitle: Text(dataFormatada),
               );
             },
           );

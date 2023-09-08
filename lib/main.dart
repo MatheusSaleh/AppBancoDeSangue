@@ -187,14 +187,14 @@ bool _isValidPassword(String password) {
         _buildInputField(_emailController, isEmail: true),
         Text(
           _emailErrorMessage,
-          style: TextStyle(color: Colors.red),
+          style: const TextStyle(color: Colors.red),
         ),
         const SizedBox(height: 40),
         _buildGreyText("Senha"),
         _buildInputField(_passwordController, isPassword: true),
         Text(
           _passwordErrorMessage,
-          style: TextStyle(color: Colors.red),
+          style: const TextStyle(color: Colors.red),
         ),
         const SizedBox(height: 20),
         _buildRememberForgot(),
