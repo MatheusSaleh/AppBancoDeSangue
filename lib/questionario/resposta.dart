@@ -8,7 +8,7 @@ class Resposta extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+ qq Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -18,6 +18,7 @@ class Resposta extends StatelessWidget {
           backgroundColor:
               MaterialStateProperty.all(const Color.fromARGB(255, 204, 68, 33)),
         ),
+    
         child: Text(
           textoDaResposta,
           style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),

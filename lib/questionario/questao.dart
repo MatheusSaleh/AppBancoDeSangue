@@ -10,8 +10,9 @@ class Questao extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.all(10),
+
       child: Text(
-        textoDaQuestao,
+        textoDaQuestao,       
         style: const TextStyle(fontSize: 28),
         textAlign: TextAlign.center,
       ),
