@@ -8,7 +8,7 @@ class Resposta extends StatelessWidget {
       : super(key: key);
 
   @override
- qq Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(

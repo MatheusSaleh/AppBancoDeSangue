@@ -212,27 +212,48 @@ bool _isValidPassword(String password) {
     );
   }
 
-  Widget _buildInputField(TextEditingController controller,
-      {isPassword = false, isEmail = false}) {
-    return TextField(
-      controller: controller,
-      onChanged: (value) {
-         if (isPassword) {
+
+Widget _buildInputField(TextEditingController controller,
+    {isPassword = false, isEmail = false}) {
+  return TextField(
+    controller: controller,
+    onChanged: (value) {
+      if (isPassword) {
         setState(() {
-          _passwordErrorMessage = _isValidPassword(value) ? "" : _passwordErrorMessage;
+          _isPasswordValid = _isValidPassword(value);
         });
-        } else {
+      } else {
         setState(() {
-          _emailErrorMessage = _isValidEmail(value) ? "" : "Email inválido.";
+          _isEmailValid = _isValidEmail(value);
         });
-        }
-      },
-      decoration: InputDecoration(
-        suffixIcon: isPassword ? const Icon(Icons.remove_red_eye) : const Icon(Icons.done),
-      ),
-      obscureText: isPassword,
-    );
-  }
+      }
+    },
+    decoration: InputDecoration(
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                _isPasswordValid
+                    ? Icons.remove_red_eye
+                    : Icons.error_outline,
+                color: _isPasswordValid ? Colors.green : Colors.red,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordValid = !_isPasswordValid;
+                });
+              },
+            )
+          : Icon(
+              _isEmailValid ? Icons.done : Icons.error_outline,
+              color: _isEmailValid ? Colors.green : Colors.red,
+            ),
+    ),
+    obscureText: isPassword,
+  );
+}
+
+
+
 
   Widget _buildRememberForgot() {
     return Row(
@@ -254,25 +275,45 @@ bool _isValidPassword(String password) {
     );
   }
 
-  Widget _buildLoginButton() {
-    return ElevatedButton(
-      onPressed: () {
-        final email = _emailController.text;
-        final password = _passwordController.text;
+Widget _buildLoginButton() {
+  return ElevatedButton(
+    onPressed: () {
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      if (_isEmailValid && _isPasswordValid) {
         _loginWithEmailAndPassword(context, email, password);
-      },
-      style: ElevatedButton.styleFrom(
-        shape: const StadiumBorder(),
-        elevation: 20,
-        shadowColor: myColor,
-        minimumSize: const Size.fromHeight(60),
-      ),
-      child: const Text("LOGIN"),
-    );
-  }
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      shape: const StadiumBorder(),
+      elevation: 20,
+      shadowColor: myColor,
+      minimumSize: const Size.fromHeight(60),
+    ),
+    child: const Text("LOGIN"),
+  );
+}
 
-  Future<void> _loginWithEmailAndPassword(
-      BuildContext context, String email, String password) async {
+Future<void> _loginWithEmailAndPassword(
+    BuildContext context, String email, String password) async {
+  if (!_isValidEmail(email) || !_isValidPassword(password)) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Erro'),
+            content: const Text(
+                'Falha ao fazer login. Verifique suas credenciais'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'))
+            ],
+          );
+        });
+  } else {
     final userCredential =
         await _authService.signInWithEmailAndPassword(email, password);
     if (userCredential != null) {
@@ -281,26 +322,9 @@ bool _isValidPassword(String password) {
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
-    } else {
-      // ignore: use_build_context_synchronously
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Erro'),
-              content: const Text(
-                  'Falha ao fazer login. Verifique suas credenciais'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('OK'))
-              ],
-            );
-          });
     }
   }
+}
 }
 
 class HomeScreen extends StatelessWidget {
