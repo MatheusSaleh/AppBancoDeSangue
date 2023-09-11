@@ -1,3 +1,4 @@
+import 'package:appbancodesangue/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -92,6 +93,9 @@ class _FormularioDoacaoState extends State<FormularioDoacao> {
                         'uid_usuario': uid,
                       };
                       await doacoesRef.add(novaDoacao);
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
+                      ));
                     }
                   },
                   child: const Text('Registrar Doação'))

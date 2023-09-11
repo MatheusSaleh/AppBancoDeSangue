@@ -66,7 +66,10 @@ class _HistoricoDoacoesState extends State<HistoricoDoacoes> {
 
               return ListTile(
                 title: const Text('Doação'),
-                subtitle: Text(dataFormatada),
+                subtitle: Text(dataFormatada, style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22
+                )),
               );
             },
           );

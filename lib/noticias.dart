@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NoticiasScreen extends StatefulWidget {
@@ -9,14 +8,11 @@ class NoticiasScreen extends StatefulWidget {
 }
 
 class NoticiasScreenState extends State<NoticiasScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late User _user;
 
   @override
   void initState() {
     super.initState();
-    _user = _auth.currentUser!;
   }
 
   @override
@@ -40,31 +36,45 @@ class NoticiasScreenState extends State<NoticiasScreen> {
               child: CircularProgressIndicator(),
             );
           }
-          final List<int> colorCodes = <int>[600, 500, 100];
           return ListView.separated(
             padding: const EdgeInsets.all(8),
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (BuildContext context, int index) {
               var doc = snapshot.data!.docs[index];
-              return Container(
-                height: 100, // Ajuste a altura conforme necessário
-                color: Colors.amber[
-                    colorCodes[index]], // Certifique-se de definir colorCodes
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Título: ${doc['titulo']}'),
-                    Text('Conteúdo: ${doc['noticia']}'),
-                    Text('Resumo: ${doc['resumo']}'),
-                  ],
+              return Card(
+                elevation: 4, // Adicione sombreamento ao card
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${doc['titulo']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30, // Tamanho de fonte maior
+                        ),
+                      ),
+                      Text('${doc['noticia']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18
+                        ),
+                      ),
+                      Text('${doc['resumo']}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 18
+                      ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
             separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
+                const SizedBox(height: 16),
           );
-
-      
         },
       ),
     );
