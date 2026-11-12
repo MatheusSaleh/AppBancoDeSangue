@@ -5,6 +5,7 @@ import { loadConfig, type Config } from '../src/config.js';
 import { openDatabase, type Db } from '../src/db/client.js';
 import { users } from '../src/db/schema.js';
 import { MemoryMailer } from '../src/lib/mailer.js';
+import type { AiService } from '../src/lib/venice.js';
 
 export interface TestContext {
   app: Awaited<ReturnType<typeof buildApp>>;
@@ -14,7 +15,7 @@ export interface TestContext {
 }
 
 /** Fresh in-memory database per test; cheap scrypt params keep tests fast. */
-export async function createTestApp(overrides: Partial<Config> = {}): Promise<TestContext> {
+export async function createTestApp(overrides: Partial<Config> = {}, ai?: AiService): Promise<TestContext> {
   const config: Config = {
     ...loadConfig({ NODE_ENV: 'test' }),
     authRateLimit: 1000,
@@ -30,6 +31,7 @@ export async function createTestApp(overrides: Partial<Config> = {}): Promise<Te
     mailer,
     now: () => clock.now,
     scrypt: { N: 2 ** 10, r: 8, p: 1 },
+    ...(ai ? { ai } : {}),
   });
   return { app, db, mailer, clock };
 }

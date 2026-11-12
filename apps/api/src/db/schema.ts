@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { check, index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 const timestamps = {
   createdAt: integer('created_at', { mode: 'timestamp_ms' })
@@ -75,3 +75,13 @@ export const news = sqliteTable('news', {
   publishedAt: integer('published_at', { mode: 'timestamp_ms' }).notNull(),
   createdBy: text('created_by').references(() => users.id, { onDelete: 'set null' }),
 });
+
+/** Shared chat/quiz budget per authenticated account and São Paulo calendar day. */
+export const aiDailyUsage = sqliteTable('ai_daily_usage', {
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  day: text('day').notNull(),
+  used: integer('used').notNull().default(0),
+}, (t) => [
+  primaryKey({ columns: [t.userId, t.day] }),
+  check('ai_daily_usage_nonnegative', sql`${t.used} >= 0`),
+]);

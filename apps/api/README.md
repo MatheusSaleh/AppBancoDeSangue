@@ -47,6 +47,9 @@ npm run user:promote -- pessoa@example.com
 | GET | `/news` | autenticado | Notícias |
 | POST / DELETE | `/news`, `/news/:id` | administrador | Publica / remove |
 | GET | `/health` | público | Verificação de saúde |
+| POST | `/ai/quiz` | autenticado | Gera 5 questões educativas com alternativas e explicações |
+| POST | `/ai/chat` | autenticado | Responde à conversa e devolve 2–3 próximas perguntas sugeridas |
+| GET | `/ai/usage` | autenticado | Consulta somente a própria cota diária, sem consumir IA |
 
 Erros seguem um formato único:
 `{ "error": { "code": "...", "message": "mensagem em português" } }`.
@@ -71,6 +74,10 @@ Erros seguem um formato único:
 
 ## Limitações
 
+- **IA:** exige `VENICE_API_KEY` no `.env` da API e créditos no Venice.
+  Veja a configuração e os limites abaixo. Pode gerar conteúdo incorreto;
+  a validação de formato não garante a correção médica das respostas.
+
 - **E-mail:** não há provedor configurado. O `LogMailer` grava o código de
   redefinição no log do servidor. Em produção, implemente a interface
   `Mailer` com um provedor de e-mail.
@@ -82,3 +89,92 @@ Erros seguem um formato único:
 - **Auditoria:** `npm audit` não aponta nada nas dependências de produção.
   Há avisos moderados em ferramentas de desenvolvimento (ESLint e
   `drizzle-kit`), que não vão para a imagem.
+
+## Venice AI
+
+```dotenv
+# Em apps/api/.env (nunca no Flutter, no Git ou nas capturas de tela)
+VENICE_API_KEY=sua_chave
+# Opcional; vazio descobre o modelo padrão compatível pelo catálogo atual.
+VENICE_MODEL=
+AI_DAILY_LIMIT=20
+```
+
+A integração usa `https://api.venice.ai/api/v1/chat/completions`, autenticação
+Bearer e JSON Schema estrito. Os modelos são descobertos em `/models?type=text`
+e precisam oferecer `supportsResponseSchema=true`; o catálogo é consultado
+novamente após 10 minutos. Um modelo configurado que não esteja disponível ou
+não suporte esse formato produz um erro explícito, sem trocar silenciosamente.
+Referência: [Venice — respostas estruturadas](https://docs.venice.ai/guides/features/structured-responses).
+
+`POST /ai/quiz` recebe `{}`. `POST /ai/chat` recebe, por exemplo:
+
+```json
+{"messages":[{"role":"user","content":"Como me preparar para doar?"}]}
+```
+
+O chat devolve `{ "reply": "...", "suggestions": ["...", "..."] }`.
+Somente `user` e `assistant` são aceitos, alternados, começando e terminando
+com `user`. Limites: 11 mensagens, 1800 caracteres por mensagem, 9000 no total;
+o app limita a entrada do usuário a 1000 caracteres e envia as últimas 5
+trocas. A API não armazena conversas nem as associa ao perfil. O texto digitado
+é enviado ao Venice; não há envio automático de dados do doador.
+
+Proteções: autenticação obrigatória, 6 chamadas/minuto por conta por endpoint,
+uma cota diária persistente compartilhada entre chat e quiz (veja abaixo),
+até 2 chamadas simultâneas por instância, timeout total de 60 segundos e limite
+de 3000 tokens por resposta. O aplicativo aguarda até 75 segundos. Nenhum retry
+automático é feito para evitar custos duplicados. Respostas e históricos são
+validados; erros do provedor são substituídos por mensagens seguras, e a chave
+e os prompts não são gravados nos logs. As respostas usam `Cache-Control: no-store`.
+Sem configuração, a API continua atendendo os demais recursos e retorna 503
+apenas para as rotas de IA. Em Docker, passe a chave com `--env-file .env`.
+
+Os prompts restringem o tema à doação e hemoterapia, incluem uma referência
+educativa do Ministério da Saúde revisada em 12/11/2026 e orientam a não dar
+diagnóstico, prescrição ou liberação individual para doar. Não há consulta
+atualizada a estoques, localização de hemocentros ou pesquisa na web.
+
+### Cota diária de IA
+
+`AI_DAILY_LIMIT` aceita um inteiro de 0 a 1000 (padrão: **20**). `0` desativa
+novas gerações. Reinicie a API ao mudar a configuração. A migração
+`0001_ai_daily_usage.sql` cria o contador automaticamente no SQLite existente.
+
+- Uma chamada de chat ou geração de questionário usa uma unidade; ambas as
+  rotas compartilham a cota. Uma sugestão enviada conta como mensagem.
+- A chave do contador é `(usuário autenticado, dia em America/Sao_Paulo)`.
+  A API usa seu relógio e as regras IANA para definir a meia-noite, inclusive
+  possíveis mudanças de fuso. Não confia em datas, IDs ou limites do cliente.
+- Uma instrução SQL `INSERT … ON CONFLICT … DO UPDATE … WHERE` reserva a
+  unidade antes de chamar o Venice. O banco serializa as escritas; chamadas
+  simultâneas ou instâncias ligadas ao mesmo arquivo não ultrapassam a cota.
+- O contador persiste em reinícios e é compartilhado entre sessões e
+  dispositivos da mesma conta. A implantação deve preservar o volume do banco;
+  cópias independentes do SQLite não compartilham limites.
+- Pedidos sem autenticação, inválidos ou barrados pelo rate limit por minuto
+  não reservam unidades. Uma reserva admitida não é estornada em erros, falta
+  de configuração, serviço ocupado, timeout ou resposta inválida: falhas do
+  provedor podem gerar cobranças, e estornar indiscriminadamente permitiria
+  repetir tentativas cobradas sem limite.
+- Não há exceção para administradores. O limite é por conta, não por pessoa:
+  combater múltiplos cadastros exige políticas adicionais de verificação.
+
+`GET /ai/usage` continua disponível mesmo após esgotar a cota:
+
+```json
+{
+  "limit": 20,
+  "used": 3,
+  "remaining": 17,
+  "day": "2026-11-12",
+  "timeZone": "America/Sao_Paulo",
+  "resetsAt": "2026-11-13T03:00:00.000Z"
+}
+```
+
+As respostas autenticadas das rotas de IA incluem `X-AI-Daily-Limit`,
+`X-AI-Daily-Remaining` e `X-AI-Reset-At`, expostos via CORS às origens permitidas.
+Ao exceder a cota, a API responde **429** com código `ai_daily_limit_exceeded`,
+mensagem de renovação para o app e `Retry-After` em segundos. O usuário segue
+autenticado e pode usar normalmente as funcionalidades que não dependem de IA.

@@ -17,6 +17,8 @@ import type { Db } from './db/client.js';
 import { DEFAULT_SCRYPT, type ScryptParams } from './lib/crypto.js';
 import { HttpError } from './lib/errors.js';
 import { LogMailer, type Mailer } from './lib/mailer.js';
+import { VeniceService, type AiService } from './lib/venice.js';
+import { aiRoutes } from './modules/ai.js';
 import { authRoutes } from './modules/auth.js';
 import { donorRoutes } from './modules/donor.js';
 import { newsRoutes } from './modules/news.js';
@@ -28,6 +30,7 @@ export interface AppDeps {
   mailer: Mailer;
   now: () => Date;
   scrypt: ScryptParams;
+  ai: AiService;
 }
 
 type BuildDeps = Pick<AppDeps, 'config' | 'db'> & Partial<Omit<AppDeps, 'config' | 'db'>>;
@@ -41,6 +44,7 @@ export async function buildApp(deps: BuildDeps, options: FastifyServerOptions = 
   }).withTypeProvider<ZodTypeProvider>();
 
   const full: AppDeps = {
+    ai: new VeniceService(config),
     now: () => new Date(),
     scrypt: DEFAULT_SCRYPT,
     // Without a real provider, reset codes go to the server log.
@@ -67,6 +71,7 @@ export async function buildApp(deps: BuildDeps, options: FastifyServerOptions = 
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
+    exposedHeaders: ['X-AI-Daily-Limit', 'X-AI-Daily-Remaining', 'X-AI-Reset-At', 'Retry-After'],
     maxAge: 600,
   });
   await app.register(rateLimit, { max: config.globalRateLimit, timeWindow: '1 minute' });
@@ -134,6 +139,7 @@ export async function buildApp(deps: BuildDeps, options: FastifyServerOptions = 
   await app.register(authRoutes, { prefix: '/auth', ...full });
   await app.register(donorRoutes, full);
   await app.register(newsRoutes, { prefix: '/news', ...full });
+  await app.register(aiRoutes, { prefix: '/ai', ...full });
 
   return app;
 }

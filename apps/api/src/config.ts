@@ -14,6 +14,9 @@ const envSchema = z.object({
   ENABLE_DOCS: bool.optional(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   TRUST_PROXY: bool.default(false),
+  VENICE_API_KEY: z.string().trim().default(''),
+  VENICE_MODEL: z.string().trim().max(200).default(''),
+  AI_DAILY_LIMIT: z.coerce.number().int().min(0).max(1000).default(20),
 });
 
 export interface Config {
@@ -26,6 +29,9 @@ export interface Config {
   enableDocs: boolean;
   logLevel: string;
   trustProxy: boolean;
+  veniceApiKey: string;
+  veniceModel: string;
+  aiDailyLimit: number;
   /** Requests per minute per IP on authentication endpoints. */
   authRateLimit: number;
   /** Requests per minute per IP on every other endpoint. */
@@ -49,6 +55,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     enableDocs: e.ENABLE_DOCS ?? e.NODE_ENV !== 'production',
     logLevel: e.LOG_LEVEL,
     trustProxy: e.TRUST_PROXY,
+    veniceApiKey: e.VENICE_API_KEY,
+    veniceModel: e.VENICE_MODEL,
+    aiDailyLimit: e.AI_DAILY_LIMIT,
     authRateLimit: 10,
     globalRateLimit: 300,
   };
