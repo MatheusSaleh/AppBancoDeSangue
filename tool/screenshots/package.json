@@ -1,0 +1,9 @@
+{
+  "name": "appbancodesangue-screenshots",
+  "private": true,
+  "type": "module",
+  "description": "Captures README screenshots from the demo web build.",
+  "dependencies": {
+    "puppeteer-core": "^25.17.0"
+  }
+}
