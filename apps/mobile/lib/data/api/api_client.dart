@@ -35,12 +35,17 @@ class ApiClient {
   void Function()? onUnauthorized;
 
   Future<Object?> get(String path) => _send('GET', path);
-  Future<Object?> post(String path, [Object? body]) =>
-      _send('POST', path, body);
+  Future<Object?> post(String path, [Object? body, Duration? requestTimeout]) =>
+      _send('POST', path, body, requestTimeout);
   Future<Object?> put(String path, Object? body) => _send('PUT', path, body);
   Future<Object?> delete(String path) => _send('DELETE', path);
 
-  Future<Object?> _send(String method, String path, [Object? body]) async {
+  Future<Object?> _send(
+    String method,
+    String path, [
+    Object? body,
+    Duration? requestTimeout,
+  ]) async {
     final request = http.Request(method, _base.resolve(path))
       ..headers['Accept'] = 'application/json';
     final authToken = token;
@@ -54,9 +59,10 @@ class ApiClient {
 
     final http.Response response;
     try {
-      response = await http.Response.fromStream(
-        await _http.send(request).timeout(timeout),
-      );
+      response = await _http
+          .send(request)
+          .then(http.Response.fromStream)
+          .timeout(requestTimeout ?? timeout);
     } on TimeoutException {
       throw const ApiException(
         'O servidor demorou para responder. Tente novamente.',

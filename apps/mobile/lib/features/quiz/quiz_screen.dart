@@ -1,22 +1,33 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../../domain/models/quiz.dart';
 import '../../shared/widgets/common.dart';
 import 'quiz_questions.dart';
 import 'quiz_view_model.dart';
 
 class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({
+    super.key,
+    this.questions = quizQuestions,
+    this.onNewQuiz,
+    this.isAi = false,
+  });
+
+  final List<QuizQuestion> questions;
+  final VoidCallback? onNewQuiz;
+  final bool isAi;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => QuizViewModel(quizQuestions),
+      create: (_) => QuizViewModel(questions),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Quiz')),
+        appBar: AppBar(title: Text(isAi ? 'Quiz com IA' : 'Quiz')),
         body: Consumer<QuizViewModel>(
-          builder: (context, quiz, _) =>
-              quiz.finished ? _Result(quiz: quiz) : _Question(quiz: quiz),
+          builder: (context, quiz, _) => quiz.finished
+              ? _Result(quiz: quiz, onNewQuiz: onNewQuiz)
+              : _Question(quiz: quiz, isAi: isAi),
         ),
       ),
     );
@@ -24,9 +35,10 @@ class QuizScreen extends StatelessWidget {
 }
 
 class _Question extends StatelessWidget {
-  const _Question({required this.quiz});
+  const _Question({required this.quiz, required this.isAi});
 
   final QuizViewModel quiz;
+  final bool isAi;
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +48,16 @@ class _Question extends StatelessWidget {
     final total = quiz.questions.length;
 
     return ResponsiveListView(
+      key: ValueKey(quiz.index),
       maxWidth: 640,
       children: [
+        if (isAi) ...[
+          const DemoNotice(
+            'Gerado por IA. Pode conter erros; a triagem do hemocentro define a aptidão.',
+            icon: Icons.info_outline,
+          ),
+          const SizedBox(height: 16),
+        ],
         LinearProgressIndicator(
           value: quiz.progress,
           minHeight: 6,
@@ -167,9 +187,10 @@ class _OptionButton extends StatelessWidget {
 }
 
 class _Result extends StatelessWidget {
-  const _Result({required this.quiz});
+  const _Result({required this.quiz, this.onNewQuiz});
 
   final QuizViewModel quiz;
+  final VoidCallback? onNewQuiz;
 
   @override
   Widget build(BuildContext context) {
@@ -201,9 +222,13 @@ class _Result extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               FilledButton.icon(
-                onPressed: quiz.restart,
+                onPressed: onNewQuiz ?? quiz.restart,
                 icon: const Icon(Icons.replay),
-                label: const Text('Refazer quiz'),
+                label: Text(
+                  onNewQuiz == null
+                      ? 'Refazer quiz'
+                      : 'Gerar outro questionário',
+                ),
               ),
             ],
           ),

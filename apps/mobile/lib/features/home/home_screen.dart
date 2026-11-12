@@ -32,6 +32,12 @@ class HomeScreen extends StatelessWidget {
       '/quiz',
     ),
     _Destination(
+      'Assistente',
+      'Dúvidas sobre doação',
+      Icons.chat_bubble_outline,
+      '/chat',
+    ),
+    _Destination(
       'Notícias',
       'Comunicados',
       Icons.article_outlined,
@@ -231,7 +237,17 @@ class _DestinationCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(destination.route),
+        onTap: () {
+          if (const {
+            '/doacoes',
+            '/quiz',
+            '/chat',
+          }.contains(destination.route)) {
+            context.go(destination.route);
+          } else {
+            context.push(destination.route);
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

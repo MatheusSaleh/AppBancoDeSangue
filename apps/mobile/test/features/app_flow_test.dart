@@ -38,6 +38,58 @@ Future<void> _goBack(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets(
+    'bottom navigation preserves quiz progress and disappears on logout',
+    (tester) async {
+      await _pumpApp(tester);
+      expect(find.byType(NavigationBar), findsNothing);
+      await _tapText(tester, 'Entrar como visitante');
+      await tester.tap(find.byKey(const ValueKey('nav-quiz')));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        2,
+      );
+      await _tapText(tester, 'Apenas homens');
+      await tester.tap(find.byKey(const ValueKey('nav-history')));
+      await tester.pumpAndSettle();
+      expect(find.text('Minhas doações'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('nav-quiz')));
+      await tester.pumpAndSettle();
+      expect(find.text('Não é bem assim.'), findsOneWidget);
+      await _tapText(tester, 'Próxima');
+      await tester.tap(find.byKey(const ValueKey('nav-home')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('nav-quiz')));
+      await tester.pumpAndSettle();
+      expect(find.text('Pergunta 2 de 5'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('nav-home')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Sair'));
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'home tab restores nested navigation and reselecting returns to its root',
+    (tester) async {
+      await _pumpApp(tester);
+      await _tapText(tester, 'Entrar como visitante');
+      await _tapText(tester, 'Guia de doação');
+      await _tapText(tester, 'Antes da doação');
+      await tester.tap(find.byKey(const ValueKey('nav-history')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('nav-home')));
+      await tester.pumpAndSettle();
+      expect(find.text('Verifique os requisitos básicos'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('nav-home')));
+      await tester.pumpAndSettle();
+      expect(find.text('Olá!'), findsOneWidget);
+      expect(find.byTooltip('Voltar'), findsNothing);
+    },
+  );
+
   testWidgets('demo flow: guest login → profile → register → countdown', (
     tester,
   ) async {
@@ -60,6 +112,7 @@ void main() {
 
     // Register a donation today (default date in the form).
     await _tapText(tester, 'Registrar doação');
+    expect(find.byType(NavigationBar), findsNothing);
     await tester.enterText(find.byType(TextField).first, 'Hemocentro Regional');
     await _tapText(tester, 'Salvar');
 

@@ -1,10 +1,12 @@
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../features/about/about_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/reset_password_screen.dart';
 import '../features/auth/session_view_model.dart';
 import '../features/auth/sign_up_screen.dart';
+import '../features/chat/chat_screen.dart';
 import '../features/compatibility/compatibility_screen.dart';
 import '../features/donations/donation_form_screen.dart';
 import '../features/donations/donation_history_screen.dart';
@@ -12,14 +14,17 @@ import '../features/guide/guide_screens.dart';
 import '../features/home/home_screen.dart';
 import '../features/news/news_screen.dart';
 import '../features/profile/profile_screen.dart';
-import '../features/quiz/quiz_screen.dart';
+import '../features/quiz/ai_quiz_screen.dart';
+import '../shared/widgets/app_navigation_shell.dart';
 
 const _publicRoutes = {'/login', '/cadastro', '/redefinir-senha'};
 
 /// Declarative routes with a single auth guard. Replaces the 2023 mix of
 /// StreamBuilder + manual pushReplacement, which stacked duplicate screens.
 GoRouter buildRouter(SessionViewModel session) {
+  final rootNavigator = GlobalKey<NavigatorState>(debugLabel: 'root');
   return GoRouter(
+    navigatorKey: rootNavigator,
     initialLocation: '/',
     refreshListenable: session,
     redirect: (context, state) {
@@ -39,44 +44,79 @@ GoRouter buildRouter(SessionViewModel session) {
         builder: (_, state) =>
             ResetPasswordScreen(email: state.uri.queryParameters['email']),
       ),
-      GoRoute(
-        path: '/',
-        builder: (_, _) => const HomeScreen(),
-        routes: [
-          GoRoute(path: 'perfil', builder: (_, _) => const ProfileScreen()),
-          GoRoute(
-            path: 'doacoes',
-            builder: (_, _) => const DonationHistoryScreen(),
+      StatefulShellRoute.indexedStack(
+        builder: (_, _, shell) => AppNavigationShell(navigationShell: shell),
+        branches: [
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'nova',
-                builder: (_, _) => const DonationFormScreen(),
-              ),
-              GoRoute(
-                path: ':id/editar',
-                builder: (_, state) =>
-                    DonationFormScreen(donationId: state.pathParameters['id']),
+                path: '/',
+                builder: (_, _) => const HomeScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'perfil',
+                    builder: (_, _) => const ProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'guia',
+                    builder: (_, _) => const GuideScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':slug',
+                        builder: (_, state) => GuideStageScreen(
+                          slug: state.pathParameters['slug']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'noticias',
+                    builder: (_, _) => const NewsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'compatibilidade',
+                    builder: (_, _) => const CompatibilityScreen(),
+                  ),
+                  GoRoute(
+                    path: 'sobre',
+                    builder: (_, _) => const AboutScreen(),
+                  ),
+                ],
               ),
             ],
           ),
-          GoRoute(
-            path: 'guia',
-            builder: (_, _) => const GuideScreen(),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: ':slug',
-                builder: (_, state) =>
-                    GuideStageScreen(slug: state.pathParameters['slug']!),
+                path: '/doacoes',
+                builder: (_, _) => const DonationHistoryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'nova',
+                    parentNavigatorKey: rootNavigator,
+                    builder: (_, _) => const DonationFormScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id/editar',
+                    parentNavigatorKey: rootNavigator,
+                    builder: (_, state) => DonationFormScreen(
+                      donationId: state.pathParameters['id'],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          GoRoute(path: 'quiz', builder: (_, _) => const QuizScreen()),
-          GoRoute(path: 'noticias', builder: (_, _) => const NewsScreen()),
-          GoRoute(
-            path: 'compatibilidade',
-            builder: (_, _) => const CompatibilityScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/quiz', builder: (_, _) => const AiQuizScreen()),
+            ],
           ),
-          GoRoute(path: 'sobre', builder: (_, _) => const AboutScreen()),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(path: '/chat', builder: (_, _) => const ChatScreen()),
+            ],
+          ),
         ],
       ),
     ],

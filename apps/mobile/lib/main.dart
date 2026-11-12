@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'app.dart';
 import 'core/config.dart';
+import 'data/api/api_ai_repository.dart';
 import 'data/api/api_client.dart';
 import 'data/api/api_repositories.dart';
 import 'data/api/token_store.dart';
@@ -45,5 +46,6 @@ Future<AppDependencies> _apiDependencies(AppConfig config) async {
     donations: ApiDonationRepository(client),
     profiles: ApiProfileRepository(client),
     news: ApiNewsRepository(client),
+    ai: ApiAiRepository(client),
   );
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/config.dart';
 import 'core/router.dart';
 import 'core/theme.dart';
+import 'data/repositories/ai_repository.dart';
 import 'data/repositories/repositories.dart';
 import 'features/auth/session_view_model.dart';
 import 'features/donations/donor_view_model.dart';
@@ -18,6 +19,7 @@ class AppDependencies {
     required this.donations,
     required this.profiles,
     required this.news,
+    this.ai = const UnavailableAiRepository(),
     this.clock,
   });
 
@@ -26,6 +28,7 @@ class AppDependencies {
   final DonationRepository donations;
   final ProfileRepository profiles;
   final NewsRepository news;
+  final AiRepository ai;
   final DateTime Function()? clock;
 }
 
@@ -73,6 +76,7 @@ class _BloodDonationAppState extends State<BloodDonationApp> {
         Provider.value(value: deps.config),
         Provider.value(value: deps.auth),
         Provider.value(value: deps.news),
+        Provider.value(value: deps.ai),
         ChangeNotifierProvider.value(value: _session),
         ChangeNotifierProvider.value(value: _donor),
       ],
