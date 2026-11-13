@@ -1,31 +1,52 @@
 # Banco de Sangue
 
 Monorepo com um app Flutter e uma API em TypeScript para quem doa sangue:
-guia da doação, quiz educativo, histórico de doações e **estimativa da
-próxima data em que a pessoa pode doar**, conforme as regras do Ministério
-da Saúde.
+guia educativo, histórico de doações, estimativa da próxima data para doar
+e **questionários e assistente de dúvidas com Venice AI**. A navegação
+inferior mantém o quiz e a conversa ao trocar de aba, e o backend controla
+uma cota diária de IA por conta.
 
 Desenvolvido em 2023 como **Projeto de Iniciação Científica** no Centro de
 Pesquisas em Informática da FEMA e modernizado em 2026. A evolução está
 documentada em [docs/EVOLUCAO.md](docs/EVOLUCAO.md).
 
-| Início | Histórico | Quiz com explicação | Compatibilidade |
-| --- | --- | --- | --- |
-| ![Início](docs/screenshots/02-home.png) | ![Histórico](docs/screenshots/03-historico.png) | ![Quiz](docs/screenshots/06-quiz-feedback.png) | ![Compatibilidade](docs/screenshots/04-compatibilidade.png) |
+| Início e navegação inferior | Questionário gerado por IA | Assistente com perguntas sugeridas |
+| --- | --- | --- |
+| ![Início com quatro abas de navegação](docs/screenshots/02-home.png) | ![Pergunta gerada pelo Venice AI](docs/screenshots/10-quiz-ia.png) | ![Chat com resposta real do Venice e sugestões](docs/screenshots/12-chat-ia.png) |
 
 <details>
-<summary>Mais capturas (login, guia, registro, tema escuro, desktop)</summary>
+<summary>Mais capturas: explicações, conversa contextual, cota diária e demais telas</summary>
 
-| Login (demonstração) | Guia | Registrar doação | Tema escuro |
-| --- | --- | --- | --- |
-| ![Login](docs/screenshots/01-login.png) | ![Guia](docs/screenshots/05-guia.png) | ![Registrar](docs/screenshots/07-registrar.png) | ![Escuro](docs/screenshots/08-home-escuro.png) |
+| Explicação da resposta | Continuação da conversa |
+| --- | --- |
+| ![Feedback do questionário com IA](docs/screenshots/11-quiz-ia-feedback.png) | ![Resposta à pergunta sugerida com contexto](docs/screenshots/13-chat-contexto.png) |
+
+| Resultado do questionário | Limite diário atingido |
+| --- | --- |
+| ![Pontuação ao terminar o questionário](docs/screenshots/14-quiz-resultado.png) | ![API bloqueando nova geração após esgotar a cota](docs/screenshots/15-limite-ia.png) |
+
+| Histórico com dados fictícios | Compatibilidade de hemácias |
+| --- | --- |
+| ![Histórico com a aba selecionada](docs/screenshots/03-historico.png) | ![Compatibilidade sanguínea ABO/Rh](docs/screenshots/04-compatibilidade.png) |
+
+| Login com conta | Guia de preparo |
+| --- | --- |
+| ![Login do modo API](docs/screenshots/01-login.png) | ![Orientações antes da doação](docs/screenshots/05-guia.png) |
+
+| Registro de doação | Quiz local, disponível sem IA |
+| --- | --- |
+| ![Formulário de registro](docs/screenshots/07-registrar.png) | ![Feedback do quiz local](docs/screenshots/06-quiz-feedback.png) |
+
+<img src="docs/screenshots/08-home-escuro.png" alt="Início em tema escuro" width="360">
 
 ![Layout em tela larga](docs/screenshots/09-home-desktop.png)
 
 </details>
 
-> As capturas são do build Web real no modo demonstração, com um doador
-> fictício. Para regenerá-las, veja [Capturas de tela](#capturas-de-tela).
+> Capturas do build Web real em modo API, com o doador fictício Lucas Andrade
+> em um banco separado. O quiz e o chat exibem respostas reais do Venice.
+> A cota do ambiente de captura foi reduzida a **3 solicitações** para mostrar
+> o bloqueio; o padrão do app é **20 por dia**. Veja [Capturas de tela](#capturas-de-tela).
 
 ## Estrutura
 
@@ -51,6 +72,10 @@ informação confiável e acompanhamento pessoal.
 | --- | --- |
 | Guia antes, durante e depois da doação | 2023, revisado com fonte oficial em 2026 |
 | Quiz educativo | 2023; explicações e progresso em 2026 |
+| Questionários aleatórios com IA: 5 perguntas, alternativas embaralhadas e explicações | 2026; Venice AI pelo backend |
+| Assistente sobre doação e bancos de sangue, com contexto e perguntas sugeridas | 2026 |
+| Barra inferior: Início, Histórico, Quiz e Assistente, preservando o estado das abas | 2026 |
+| Cota diária de IA por conta, compartilhada entre quiz e chat e persistida no SQLite | 2026; padrão de 20 solicitações, renovado à meia-noite de Brasília |
 | Registro e histórico de doações | 2023; edição, exclusão com "Desfazer" e validação de datas em 2026 |
 | Notícias | 2023; publicação por administradores e estados de erro em 2026 |
 | Login com e-mail e senha | 2023; cadastro e recuperação de senha em 2026 |
@@ -70,7 +95,10 @@ isso. A triagem clínica no hemocentro é quem decide.
   doações ficam no armazenamento local do dispositivo. As notícias são
   exemplos fictícios, marcados na tela.
 - **Modo API:** contas, perfil, doações e notícias ficam na API
-  ([apps/api](apps/api)). Nenhum serviço externo é usado.
+  ([apps/api](apps/api)). O quiz com IA e o chat usam o Venice AI.
+  Apenas o conteúdo do chat é enviado ao provedor: perfil e histórico de
+  doações não são incluídos automaticamente. A conversa fica na memória durante
+  a sessão; Nova conversa e sair da conta a descartam. Evite compartilhar informações pessoais.
 - **E-mail:** não há provedor configurado. O código de redefinição de senha
   aparece no log da API.
 - Os critérios de doação vêm do Ministério da Saúde: a página
@@ -112,6 +140,51 @@ Crie uma conta pelo app. Para publicar notícias, promova a conta com
 `npm run user:promote -- seu@email` em `apps/api`. O
 [README da API](apps/api/README.md) descreve endpoints, segurança e Docker.
 
+### Configurar a IA (Venice)
+
+Adicione ao arquivo **`apps/api/.env`**, que não é versionado:
+
+```dotenv
+VENICE_API_KEY=sua_chave_do_venice
+VENICE_MODEL=
+AI_DAILY_LIMIT=20
+```
+
+Reinicie `npm run dev`. A chave fica somente no backend; não use
+`--dart-define` para passá-la ao Flutter. `VENICE_MODEL` é opcional: vazio,
+a API consulta `/models` e usa o modelo padrão com suporte a respostas
+estruturadas (ou o primeiro compatível). Você pode fixar um ID disponível
+com `supportsResponseSchema=true`.
+
+No app em modo API, abra **Quiz → Gerar questionário com IA** ou
+**Assistente**. São geradas 5 questões com alternativas e explicações,
+com temas e alternativas embaralhados. No chat, digite sua dúvida ou toque
+nas perguntas sugeridas; as sugestões mudam conforme a conversa.
+**Nova conversa** limpa o contexto. A barra inferior dá acesso a Início,
+Histórico, Quiz e Assistente, preservando o progresso e o chat ao trocar abas.
+Sem chave, o app informa a indisponibilidade
+e permite usar o quiz original. O modo demonstração mantém o quiz local.
+
+Os conteúdos de IA são educativos, podem conter erros e não substituem a
+triagem do hemocentro. A referência de preparo usada nos prompts é o
+[Ministério da Saúde](https://www.gov.br/saude/pt-br/composicao/saes/doacao-de-sangue),
+conferida em 12/11/2026. Não há pesquisa na web em tempo real.
+As chamadas consomem créditos da sua conta Venice.
+
+A API limita a IA a **20 solicitações por conta por dia**, compartilhadas
+entre chat e quiz. Cada questionário gerado ou mensagem enviada (inclusive
+uma sugestão tocada) usa uma solicitação. A cota renova à meia-noite de
+`America/Sao_Paulo` e fica no SQLite: trocar de sessão, reinstalar o app ou
+reiniciar a API não a zera. Altere `AI_DAILY_LIMIT` no `.env` e reinicie a API
+para ajustar o valor; `0` bloqueia novas gerações.
+
+Pedidos inválidos ou bloqueados antes da geração não gastam a cota.
+Tentativas admitidas contam mesmo em falhas ou timeouts, pois o provedor
+pode cobrar sem devolver uma resposta válida. Ao atingir o limite, o app
+mostra quando a cota renova. Isso limita cada conta; múltiplos cadastros são
+contas diferentes e exigem uma política adicional de cadastro/verificação
+caso seja necessário controlar a mesma pessoa entre contas.
+
 ### Demonstração rápida
 
 1. No modo demonstração, toque em **Entrar como visitante**.
@@ -134,7 +207,8 @@ Crie uma conta pelo app. Para publicar notícias, promova a conta com
                            │ HTTPS + Bearer token
 ┌──────────────────────────▼─ apps/api (TypeScript) ───────┐
 │ Fastify · Zod (validação + OpenAPI) · rate limit · Helmet│
-│ modules/  auth · donor (perfil, doações) · news          │
+│ modules/  auth · donor (perfil, doações) · news · ai     │
+│ cota diária persistida → Venice AI via HTTPS            │
 │ Drizzle ORM → SQLite (migrações versionadas)             │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -143,7 +217,10 @@ Crie uma conta pelo app. Para publicar notícias, promova a conta com
 [guia de arquitetura do Flutter](https://docs.flutter.dev/app-architecture).
 O domínio é Dart puro, testado isoladamente. Os repositórios são interfaces
 com duas implementações (local e API), escolhidas em tempo de compilação.
-As rotas usam `go_router` com um único guard de autenticação.
+As rotas usam `go_router` com um único guard de autenticação e
+`StatefulShellRoute.indexedStack` para preservar o estado das quatro abas.
+O formulário de doação abre fora da barra inferior para manter o foco no
+registro. O chat libera espaço para o teclado ao digitar.
 
 **API:** módulos por recurso. Os schemas Zod validam a entrada, filtram a
 saída e geram a documentação OpenAPI. Toda consulta de dados pessoais é
@@ -163,6 +240,8 @@ filtrada pelo usuário autenticado.
 | Modo demonstração no app | Avaliar sem rodar servidor | Duas implementações de repositório |
 | `provider` + `ChangeNotifier`, `go_router` | Recomendados pela documentação do Flutter e suficientes aqui | Menos recursos que Riverpod/Bloc |
 | `material_ui` | Substituto oficial de `package:flutter/material.dart`, deprecado desde o Flutter 3.47 | Pacote recente |
+| Venice somente no backend | A chave não entra no APK ou no build Web; validação e limites ficam no servidor | Exige conexão, saldo no provedor e tratamento de respostas incorretas |
+| Cota diária com reserva atômica no SQLite | Evita ultrapassar o limite com sessões, dispositivos ou processos simultâneos | Todas as instâncias precisam usar o mesmo banco; tentativas admitidas contam mesmo se falharem |
 
 ## Verificações
 
@@ -185,28 +264,71 @@ A CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) executa:
 
 ### Testes
 
-- **API (29):** hash de senha e tokens; cadastro, login, logout e expiração
+- **API (71 testes):** hash de senha e tokens; cadastro, login, logout e expiração
   de sessão; mesma resposta para e-mail inexistente e senha errada;
   redefinição de senha (uso único, expiração, invalidação e encerramento
   das sessões e confirmações simultâneas); rate limit; validação; **isolamento entre usuários**;
-  permissões de administrador; headers, CORS e limite de corpo.
-- **App (61):**
+  permissões de administrador; headers, CORS e limite de corpo; integração
+  Venice simulada, validação de saída, timeouts e cota diária (persistência,
+  concorrência entre processos e renovação no fuso de Brasília).
+- **App (74 testes):**
   - domínio: elegibilidade, anos bissextos, tabela ABO/Rh completa;
   - repositórios locais e da API (com `MockClient`): token, restauração
     de sessão, 401, falta de rede, formato de datas;
   - view models e fluxos completos de widget.
+  - IA: tratamento das respostas e erros da API, contexto e sugestões do
+    chat, geração e repetição de questionários, aviso de cota esgotada;
+  - navegação: progresso e rascunhos preservados entre abas, teclado e
+    limpeza do chat ao sair da conta.
 
 ## Capturas de tela
 
-```sh
-cd apps/mobile && flutter build web
-cd ../../tool/screenshots && npm install
-node serve.mjs ../../apps/mobile/build/web 8766 &
-node shoot.mjs http://127.0.0.1:8766 ../../docs/screenshots
+As capturas atuais são geradas por
+[`tool/screenshots/shoot-api.mjs`](tool/screenshots/shoot-api.mjs). O script
+cria uma conta fictícia, cadastra um perfil e três doações de exemplo e
+controla o app real no Chrome. Ele faz **três chamadas ao Venice** (um quiz
+e duas mensagens), consome créditos e demonstra o bloqueio da quarta chamada.
+Não há chave, senha ou token nas imagens ou no manifesto
+[`capture-info.json`](docs/screenshots/capture-info.json).
+
+Em um **terminal exclusivo**, a partir da raiz, inicie uma API isolada com
+a chave já configurada em `apps/api/.env`. Nunca aponte este script para
+o banco de produção:
+
+```powershell
+cd apps/api
+$env:PORT = '3001'
+$env:DATABASE_PATH = './data/screenshots.db'
+$env:AI_DAILY_LIMIT = '3'
+npm run dev
 ```
 
-O script usa o Chrome instalado (variável `CHROME_PATH`), cria uma sessão
-fictícia no armazenamento local e captura cada tela.
+Em outro terminal, compile o app para essa API:
+
+```powershell
+cd apps/mobile
+flutter build web --release --dart-define=BACKEND=api --dart-define=API_URL=http://127.0.0.1:3001
+```
+
+Depois, em outro terminal, sirva o build:
+
+```powershell
+cd tool/screenshots
+npm ci --ignore-scripts
+node serve.mjs ../../apps/mobile/build/web 8766
+```
+
+Com os servidores rodando, execute em `tool/screenshots`:
+
+```powershell
+node shoot-api.mjs http://127.0.0.1:8766 ../../docs/screenshots http://127.0.0.1:3001
+```
+
+O script usa o Chrome instalado (`CHROME_PATH` permite indicar outro caminho).
+As perguntas e respostas variam a cada execução. Ao terminar, encerre os
+servidores com `Ctrl+C` e feche o terminal exclusivo das capturas para não
+reutilizar suas variáveis no servidor principal. O script anterior
+`shoot.mjs` permanece disponível para capturar apenas o modo demonstração.
 
 ## Limitações e próximos passos
 

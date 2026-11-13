@@ -58,9 +58,18 @@ Informática da FEMA, sem uso de ferramentas de IA.
   rate limit, headers de segurança e consultas limitadas ao usuário autenticado.
 - Cliente HTTP no app com token no armazenamento seguro do sistema e fluxo
   de redefinição de senha. O envio real de e-mail ainda exige um provedor.
+- Cota diária de IA por conta, compartilhada entre chat e quiz, persistida
+  no SQLite e reservada atomicamente antes de acessar o provedor. Renovação
+  à meia-noite de Brasília; configuração em `AI_DAILY_LIMIT` (padrão 20).
 - Análise estática em modo estrito e integração contínua no GitHub Actions.
 
 ### Produto
+
+- **IA (Venice):** questionários com cinco perguntas geradas por rodada,
+  alternativas embaralhadas e explicações; chat educativo com contexto e
+  sugestões de próximas perguntas. A chave fica no backend. Sem IA, o quiz
+  local continua disponível. Respostas podem conter erros e não substituem
+  a triagem; perfil e histórico não são enviados automaticamente ao provedor.
 
 - **Próxima data apta para doar:** calculada pelo intervalo (60 ou 90 dias) e
   pelo limite anual (4 ou 3 doações), conforme o Ministério da Saúde.
